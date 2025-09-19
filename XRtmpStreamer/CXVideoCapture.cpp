@@ -53,6 +53,7 @@ void CXVideoCapture::run()
 		{
 			continue;
 		}	
+		long long t1 = GetCurrentTime();
 		std::unique_lock<std::mutex> lck(mux);
 		for (uint i = 0; i < filters.size(); i++)
 		{
@@ -60,9 +61,11 @@ void CXVideoCapture::run()
 			filters[i]->Filter(&frame, &dstFrame);
 			frame = dstFrame;
 		}
+		//计算美颜处理延时
+		long long t2 = GetCurrentTime() - t1;
 		//mux.unlock();
 
-		Push(XData((char*)frame.data, frame.cols * frame.rows * frame.elemSize(),GetCurrentTime()));
+		Push(XData((char*)frame.data, frame.cols * frame.rows * frame.elemSize(),GetCurrentTime() + t2));
 	}
 }
 
